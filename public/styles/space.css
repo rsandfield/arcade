@@ -1,0 +1,8 @@
+body {
+    background: black;
+}
+
+canvas {
+    background: black;
+    outline: green solid 1px;
+}

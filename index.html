@@ -1,8 +1,16 @@
-<!doctype html>
+<!doctype HTML>
 <head>
-<script src="/public/scripts/kepler.js />
+    <script src="./public/scripts/kepler.js"></script>
+    <script src="./public/libraries/jquery-1.10.2.js"></script>
+    <link rel="stylesheet" href="./public/styles/space.css"></script>
+    <script>
+        $(function(){
+            $("#topbar").load("./topnav.html");
+        });
+    </script>
 </head>
 <body>
-<canvas id="display" width=500 height=500></canvas>
+    <div id="topbar"></div>
+    <canvas id="display" width=500 height=500></canvas>
 </body>
 </html>
