@@ -1,0 +1,81 @@
+<!doctype HTML>
+<head>
+     <script src="./public/libraries/jquery-1.10.2.js"></script>
+     <link rel="stylesheet" href="./public/styles/space.css"></script>
+     <link rel="stylesheet" href="./public/styles/kepler.css"></script>
+    <script>
+        $(function(){
+            $("#topbar").load("./topnav.html");
+        });
+    </script>
+</head>
+<body>
+    <h1>Kepler</h1>
+    <div id="topbar"></div>
+    <canvas id="display" width=500 height=500></canvas>
+    <div id="sidebar">
+        <fieldset>
+            <legend>Date & Time</legend>
+            <output id="date"></output>
+        </fieldset>
+        <br/>
+        <fieldset>
+            <legend>Settings</legend>
+            <table>
+                <tr>
+                    <td><label>Zoom</label></td>
+                    <td><output id="zoom"></output></td>
+                </tr>
+                <tr>
+                    <td><label>Speed</label></td>
+                    <td><input id="speed" type="number" value=100 style="width: 40px;"></td>
+                </tr>
+            </table>
+        </fieldset>
+        <br/>
+        <fieldset>
+            <legend>Ship</legend>
+            <table>
+                <tr>
+                    <td><label>Thrust</label></td>
+                    <td><input id="thrust" type="number" value="0.001" style="width: 40px;" min=0 max=100></input></td>
+                </tr>
+                <tr>
+                    <td><label>RCS</label></td>
+                    <td><input id="rcs" type="number" value="0.005" style="width: 40px;" min=0 max=100></input></td>
+                </tr>
+            </table>
+        </fieldset>
+        <br/>
+        <fieldset>
+            <legend><output id="bodyname"></output></legend>
+            <table>
+                <tr>
+                    <td><label>Semimajor</label></td>
+                    <td><output id="semimajor"></output></td>
+                </tr>
+                <tr>
+                    <td><label>Eccentricity</label></td>
+                    <td><output id="eccentricity"></output></td>
+                </tr>
+                <tr>
+                    <td><label>Perihelion</label></td>
+                    <td><output id="perihelion"></output></td>
+                </tr>
+                <tr>
+                    <td><label>True Anomaly</label></td>
+                    <td><output id="trueanomaly"></output></td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+</body>
+<footer>
+    <script src="./public/scripts/game/utilities.js"></script>
+    <script src="./public/scripts/kepler/vector.js"></script>
+    <script src="./public/scripts/kepler/tensor.js"></script>
+    <script src="./public/scripts/kepler/bodies.js"></script>
+    <script src="./public/scripts/kepler/ship.js"></script>
+    <script src="./public/scripts/kepler.js"></script>
+</footer>
+</html>

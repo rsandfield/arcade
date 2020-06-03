@@ -1,0 +1,15 @@
+canvas {
+    background: black;
+    outline: green solid 1px;
+}
+
+fieldset {
+	float: right;
+    text-align: center;
+    border-color: green;
+}
+
+#sidebar {
+    float:right;
+    width: 100;
+}

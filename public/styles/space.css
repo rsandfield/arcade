@@ -1,8 +1,25 @@
 body {
     background: black;
+    color: green;
 }
 
 canvas {
     background: black;
     outline: green solid 1px;
+}
+
+fieldset {
+	float: right;
+    text-align: center;
+    border-color: green;
+}
+
+#topbar a {
+    color: green;
+    outline: green solid 1px;
+    padding: 5px;
+}
+
+#topbar hr {
+    border-color: green;
 }
