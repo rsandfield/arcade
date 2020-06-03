@@ -56,7 +56,7 @@ var bodies = [
 	),
 	new Planet(
 		new Vector(60, 23454.8),
-		new Vector(Math.sqrt(bigG * 333000 / 23454.8, 0.5), Math.pow(bigG / 60, 0.5)),
+		new Vector(Math.sqrt(bigG * 333000 / 23454.8, 0.5), Math.pow(bigG / 58, 0.5)),
 		"Moon",
 		[
 			materials.water.mass(0.0003),

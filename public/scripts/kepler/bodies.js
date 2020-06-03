@@ -128,11 +128,16 @@ class Body {
 		this.trueAnomaly = eccentricity.y / eccentricity.x;
 		this.distance = Math.sqrt(1 - eccentricity.magnitudeSquared()) * Math.sin(this.angle) / (this.eccentricity + Math.cos(this.angle));
 
+		if(this.name == "Earth"){
 		document.getElementById("bodyname").value = this.name;
 		document.getElementById("semimajor").value = shortString(this.semimajor, 5);
 		document.getElementById("eccentricity").value = shortString(this.eccentricity, 5);
 		document.getElementById("perihelion").value = shortString(this.perihelion, 5);
 		document.getElementById("trueanomaly").value = shortString(this.trueAnomaly, 5);
+		let period = new Date(6 * Math.sqrt(Math.pow(this.semimajor, 3) * 4 * Math.PI * Math.PI / this.mu));
+		period.setFullYear(period.getFullYear() - 1970);
+		document.getElementById("period").value = period.getFullYear() + "Y:" + period.getMonth() + "M:" + period.getDate() + "D:" + period.getHours() + "H:" + period.getMinutes() + "M";
+		}
 	}
     
     draw () {
