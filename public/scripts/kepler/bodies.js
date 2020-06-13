@@ -32,41 +32,79 @@ const materials = {
 }
 
 class Body {
-	constructor(position, velocity, name, mass, primary = null) {
-		this.position = position;
-		this.velocity = velocity;
+	/**
+	 * 
+	 * @param {string} name Name of body
+	 * @param {Number} mass Mass of body in yottatons
+	 * @param {Body} primary Body body orbits
+	 * @param {Number} semimajor Average radius of orbit around primary in gigameters
+	 * @param {Number} eccentricity [0-1) for elliptical orbits, ≥1 for parobolic orbits
+	 * @param {Number} periapsisArgument Angluar displacement of periapsis in radians
+	 * @param {Number} meanAnomaly Position of planet along orbit, normalized to circular reference in radians
+	 * @param {Number} inclination Angular displacement of orbit relative to reference plane in radians
+	 * @param {Number} ascending Angular displacement of ascening node relative to arguement of periapsis in radians
+	 */
+	constructor(name, mass, primary, semimajor = 0, eccentricity = 0, periapsisArgument = 0, meanAnomaly = 0, inclination = 0, ascending = 0) {
 		this.name = name;
 		this.mass = mass;
-		this.soi = this.getSOI();
+		this.primary = primary;
+		this.soi = Infinity;
 		this.rotation = 0;
-		this.primary = null;
-        if(primary) this.changePrimary(primary);
+		this.position = new Vector(0, 0);
+
+		if(primary) {
+			this.period = 0;
+			this.soi = Infinity;
+			this.eccentricity = eccentricity;
+			this.semiMajor = semimajor; //Gigameters
+			this.changePrimary(primary);
+			this.semiMinor = Math.sqrt(Math.pow(this.semiMajor, 2) * (1 - Math.pow(this.eccentricity, 2)));
+			this.linearEcc = Math.sqrt(Math.pow(this.semiMajor, 2) - Math.pow(this.semiMinor, 2));
+			this.periapsis = this.semiMajor - this.linearEcc;
+			this.apoapsis = this.semiMinor + this.linearEcc;
+			this.periapsisArgument = periapsisArgument;
+			this.meanAnomaly = meanAnomaly;
+			this.inclination = inclination;
+			this.ascending = ascending;
+		}
 	}
-	
-	/**
-	 * Gets the total mass of the body from its array of mass components
-	 */
-	getMass() {
-		let mass = 0;
-		this.makeup.forEach(material => {
-			mass += material.mass;
-		});
-		return mass;
+
+	update(time) {
+		if(!this.primary) return;
+		this.meanAnomaly += 2 * Math.PI * (time / this.period);
+		let test = this.meanAnomaly;
+		this.meanAnomaly = this.meanAnomaly % (2 * Math.PI);
+		if(test > this.meanAnomaly) console.log(this.name + ": " + starDate);
+		this.trueAnomaly = this.getTrueAnomaly();
+		this.position = new Vector(
+			Math.cos(this.trueAnomaly) * this.semiMajor - this.linearEcc,
+			Math.sin(this.trueAnomaly) * this.semiMinor
+		);
 	}
 
 	changePrimary(body) {
 		this.primary = body;
-		this.soi = this.getSOI();
+		this.soi = this.semiMajor * Math.pow(this.mass / this.primary.mass, 2 / 5);
 		this.mu = bigG * this.primary.mass;
+		this.period = 2 * Math.PI * Math.sqrt(Math.pow(this.semiMajor, 3)/this.mu);
+		console.log(this.name + " under the influence of " + this.primary.name +
+			" has an SOI of " + scientificNotation(this.soi) + "Gm" +
+			" and a period of " + decimalPlace(this.period / (3600 * 24 * 365), 1) + "yr"
+		);
 	}
 
-	getSOI() {
-		let soi = Infinity;
-		if(this.primary != null) soi = this.position.subtract(this.primary.position).magnitude() * Math.pow(this.mass / this.primary.mass, 2 / 5);
-		console.log("SOI of " + this.name + " = " + scientificNotation(soi));
-		return soi;
+	getTrueAnomaly(meanAnomaly = this.meanAnomaly) {
+		return (
+			meanAnomaly +
+			2 * this.eccentricity * Math.sin(meanAnomaly) +
+			1.25 * Math.pow(this.eccentricity, 2) * Math.sin(2 * meanAnomaly)
+		);
 	}
 	
+	getMass() {
+		return this.mass;
+	}
+
 	/**
 	 * Applies gravitational forces to the body based on mass and distance of another
 	 * @param {Body} body Body to interact with
@@ -110,51 +148,74 @@ class Body {
 			console.log("Velocity error at " + this.name);
 		}
 	}
-
-	calculateOrbit() {
-		let relativePosition = this.position.subtract(this.primary.position);
-		let relativeVelocity = this.velocity.subtract(this.primary.velocity);
-		let radius = relativePosition.magnitude();
-
-		let angularMomentum = relativePosition.crossProduct(relativeVelocity);
-		let eccentricity = relativePosition.multiply(relativeVelocity.magnitudeSquared() / this.mu - 
-			1/relativePosition.magnitude()).subtract(relativeVelocity.multiply(relativePosition.dotProduct(relativeVelocity)/this.mu));
-		this.semimajor = Math.pow(angularMomentum, 2) / ((1 - eccentricity.magnitudeSquared()) * this.mu);
-		this.period = Math.pow(this.semimajor, 1.5) * 1000;
-		let transverse = relativeVelocity.multiply(radius * Math.sin(relativeVelocity.angle() - relativePosition.angle()));
-		this.eccentricity = eccentricity.magnitude();
-		let numerator = this.semimajor * (1 - Math.pow(this.eccentricity, 2));
-		this.perihelion = eccentricity.angle();
-		this.trueAnomaly = eccentricity.y / eccentricity.x;
-		this.distance = Math.sqrt(1 - eccentricity.magnitudeSquared()) * Math.sin(this.angle) / (this.eccentricity + Math.cos(this.angle));
-
-		if(this.name == "Earth"){
-		document.getElementById("bodyname").value = this.name;
-		document.getElementById("semimajor").value = shortString(this.semimajor, 5);
-		document.getElementById("eccentricity").value = shortString(this.eccentricity, 5);
-		document.getElementById("perihelion").value = shortString(this.perihelion, 5);
-		document.getElementById("trueanomaly").value = shortString(this.trueAnomaly, 5);
-		let period = new Date(6 * Math.sqrt(Math.pow(this.semimajor, 3) * 4 * Math.PI * Math.PI / this.mu));
-		period.setFullYear(period.getFullYear() - 1970);
-		document.getElementById("period").value = period.getFullYear() + "Y:" + period.getMonth() + "M:" + period.getDate() + "D:" + period.getHours() + "H:" + period.getMinutes() + "M";
-		}
-	}
     
-    draw () {
+    drawOrbitalPath() {
         context.save();
 		context.translate(
-			this.position.x * scale + transform.x,
-			this.position.y * scale + transform.y
-        );
-        context.strokeStyle = guiColor;
+			-this.position.x * scale,
+			-this.position.y * scale
+		);
+		context.rotate(-this.periapsisArgument);
+
+		context.strokeStyle = guiColor + "40";
         context.fillStyle = guiColor;
 
-        let radius = 10;
-        if(this.radius * 1.1 * scale > 10) {
-            radius = this.radius * 1.1 * scale;
+		context.rotate(this.periapsisArgument);
+		context.beginPath();
+		context.ellipse(
+			-this.linearEcc * scale,
+			0,
+			this.semiMajor * scale,
+			this.semiMinor * scale,
+			0,
+			0, 2 * Math.PI
+		);
+		context.stroke();
+		context.restore();
+	}
+	
+	drawOrbit() {
+		context.save();
 
-            if(this.primary) {
-                arrowToTarget(
+		if(this.primary) {
+			context.translate(
+				(this.position.x + this.primary.position.x) * scale + transform.x,
+				(this.position.y + this.primary.position.y) * scale + transform.y
+			);
+			this.drawOrbitalPath();
+		} else {
+			context.translate(
+				this.position.x * scale + transform.x,
+				this.position.y * scale + transform.y
+			);
+		}
+		
+		context.strokeStyle = guiColor;
+		context.fillStyle = guiColor;
+
+		let radius = 10;
+		if(this.radius * scale > 10) radius = this.radius * scale;
+
+		context.beginPath();
+		context.arc(
+			0, 0,
+			radius,
+			0, Math.PI * 2
+		);
+		context.stroke();
+
+		context.fillText(this.name, radius, -12);
+		context.fillText("m:" + scientificNotation(this.mass * 1000, 3) + "ET", radius, 0);
+		context.fillText("r:  " + scientificNotation(this.radius * 1000, 1) + "Mm", radius, 12);
+		if(this.primary) context.fillText("a:  " + scientificNotation(this.semiMajor * 1000, 1) + "Mm", radius, 24);
+
+		/*
+		let radius = this.radius * 1000;
+		if(this.primary) {
+
+			if(this.radius * 1.1 * scale > 10) {
+				radius = this.radius * 1.1 * scale;
+				arrowToTarget(
                     this.position,
                     this.primary.position,
                     radius,
@@ -175,15 +236,9 @@ class Body {
 				let distance = shortString(this.position.subtract(this.primary.position).magnitude() / 23454.8, 5) + " AU";
                 context.fillText(this.primary.name, -context.measureText(this.primary.name).width/2, -radius * 1.2 - 10);
                 context.fillText(distance, -context.measureText(distance).width/2, -radius * 1.2);
-                context.rotate(-angle + Math.PI/2);
-            }
-        } else {
-            context.beginPath();
-            context.arc(0,0,10,0,Math.PI*2);
-            context.stroke();
-
-            if(this.primary) {
-                let angle = this.position.subtract(this.primary.position).angle();
+				context.rotate(-angle + Math.PI/2);
+			} else {
+				let angle = this.position.subtract(this.primary.position).angle();
                 context.rotate(angle);
 
                 context.beginPath();
@@ -198,46 +253,30 @@ class Body {
                 context.fillText(this.primary.name, -context.measureText(this.primary.name).width/2, -radius * 1.2 - 10);
                 context.fillText(distance, -context.measureText(distance).width/2, -radius * 1.2);
                 context.rotate(-angle + Math.PI/2);
-            }
-		}
-		
-		if(this.primary) {
+			}
+			
 			context.fillStyle = guiColor + "08";
 			context.beginPath();
 			context.arc(0, 0, this.soi * scale, 0, Math.PI * 2);
 			context.fill();
 
-			this.calculateOrbit();
-			let relativePosition = this.position.subtract(this.primary.position);
-			let semiminor = Math.pow(this.semimajor, 2) * (1 - Math.pow(this.eccentricity, 2));
-			let linearEcc = Math.sqrt(Math.pow(this.semimajor, 2) - semiminor);
-			semiminor = Math.sqrt(semiminor);
 
-			context.strokeStyle = guiColor + "78";
 
-			context.beginPath();
-			context.ellipse(
-				-(relativePosition.x + Math.cos(this.perihelion) * linearEcc) * scale,
-				-(relativePosition.y + Math.sin(this.perihelion) * linearEcc) * scale,
-				this.semimajor * scale,
-				semiminor * scale,
-				this.perihelion,
-				0, 2 * Math.PI
-			)
-			context.stroke();
+			context.fillText(this.name, -context.measureText(this.name).width/2, -radius * 1.3);
 		}
 
-        context.fillText(this.name, -context.measureText(this.name).width/2, -radius * 1.3);
-
+		context.translate(
+			this.position.x * scale + transform.x,
+			this.position.y * scale + transform.y
+        );
+		*/
         context.restore();
-    }
+	}
 }
 
 class Star extends Body {
-    constructor(position, velocity, name, makeup) {
-        super(position, velocity, name, 0);
-		this.makeup = makeup;
-		this.mass = this.getMass();
+    constructor(name, mass, primary, semiMajor) {
+        super(name, mass, primary, semiMajor);
         this.luminosity = 1;
         this.temperature = 5778;
 		this.radius = this.getRadius();
@@ -246,7 +285,7 @@ class Star extends Body {
     }
 
     getRadius() {
-        return 109 * Math.pow(this.temperature / 5778, 2) * Math.pow(this.luminosity, 0.5);
+        return 0.6957 * Math.pow(this.temperature / 5778, 2) * Math.pow(this.luminosity, 0.5);
     }
 
     getDensity() {
@@ -255,45 +294,65 @@ class Star extends Body {
 
     getColor() {
         return "yellow";
-    }
+	}
+	
+	getIrradianceAtDistance(gigaMeters) {
+		return(this.luminosity / (4 * Math.PI * gigaMeters * gigaMeters))
+	}
 
+	/**
+	 * 
+	 * @param {Number} au Distance from star
+	 * @param {Number} albedo Bonds albedo of planet
+	 */
     getTemperatureAtRadius(au, albedo) {
-        return Math.pow(this.luminosity * (1-albedo) / (16 * Math.PI * stefBoltz * Math.pow(au, 2)), .25);
+		return this.temperature * Math.sqrt(696/(au*2000)) * Math.pow(1-albedo, 0.25);//696 is solar radius in mega meters, 2000 is due to au being giga meters and also *2
     }
   
     getRadiusOfTemperature(temp) {
         return Math.pow(this.luminosity / (16 * stefBoltz * Math.pow(temp, 4)), 0.5);
     }
 
-    draw() {
+    drawOrbit() {
+        super.drawOrbit();
+		/*
         context.save();
 		context.translate(
 			this.position.x * scale + transform.x,
 			this.position.y * scale + transform.y
         );
-        context.fillStyle = guiColor;
-
+		context.strokeStyle = guiColor;
+		context.fillStyle = guiColor;
+		
 		context.fillText("Luminosity: " + this.luminosity, 20, -20)
-        context.fillText("1AU: " + scientificNotation(this.getTemperatureAtRadius(1, .3), 5), 20, 0);
-        context.fillText("5.2AU: " + scientificNotation(this.getTemperatureAtRadius(5.2, .52), 5), 20, 20);
+        context.fillText("0.4AU: " + shortString(this.getTemperatureAtRadius(0.4, 0.12), 5) + "(437)", 20, -10);
+        context.fillText("0.7AU: " + shortString(this.getTemperatureAtRadius(0.7, 0.75), 5) + "(232)", 20, 0);
+        context.fillText("1.0AU: " + shortString(this.getTemperatureAtRadius(1, 0.306), 5) + "(255)", 20, 10);
+        context.fillText("1.5AU: " + shortString(this.getTemperatureAtRadius(1.5, 0.16), 5) + "(209)", 20, 20);
+        context.fillText("5.2AU: " + shortString(this.getTemperatureAtRadius(5.2, .34), 5), 20, 30);
+        context.fillText("9.6AU: " + shortString(this.getTemperatureAtRadius(9.6, .34), 5), 20, 40);
+        context.fillText("19.2AU: " + shortString(this.getTemperatureAtRadius(19.2, .30), 5), 20, 50);
+        context.fillText("30AU: " + shortString(this.getTemperatureAtRadius(30, .29), 5), 20, 60);
 
         context.fillText("273: " + shortString(this.getRadiusOfTemperature(273), 5), -60, 0);
         context.fillText("373: " + shortString(this.getRadiusOfTemperature(373), 5), -60, 20);
-
         context.restore();
-
-        super.draw();
+		*/
     }
 }
 
 class Planet extends Body {
-	constructor(position, velocity, name, makeup) {
-		super(position, velocity, name, 0);
+	constructor(name, mass, primary, semimajor = 0, eccentricity = 0, periapsisArgument = 0, meanAnomaly = 0, inclination = 0, ascending = 0) {
+		super(name, mass, primary, semimajor, eccentricity, periapsisArgument, meanAnomaly, inclination, ascending);
+		/*
 		this.makeup = makeup;
 		this.mass = this.getMass();
 		this.density = this.getDensity();
 		this.radius = this.getRadius();
 		this.color = this.getColor();
+		*/
+
+		this.radius = 0.006371
 	}
 	
 	getDensity() {
@@ -342,7 +401,7 @@ class Planet extends Body {
 		return rgb(fm, fr, fw);
 	}
 	
-	draw() {
+	drawOrbit() {
 		context.save();
 		context.translate(
 			this.position.x * scale + transform.x,
@@ -361,11 +420,9 @@ class Planet extends Body {
 		context.fill();
 		
 		context.fillStyle = guiColor;
-		context.fillText(shortString(this.radius,5), 10, -10);
-		context.fillText(shortString(this.mass,5), 10, 10);
 		
         context.restore();
 		
-		if(this.primary && this.position.subtract(this.primary.position).magnitudeSquared()*scale > 2400) super.draw();
+		if(this.semiMajor*scale > 30) super.drawOrbit();
 	}
 }

@@ -1,6 +1,6 @@
 class Ship extends Body {
-	constructor(position, velocity) {
-		super(position, velocity, "Ship", 0.0001);
+	constructor(primary, semiMajor) {
+		super("Ship", 0.00001, primary, semiMajor);
 		this.enginePower = 0.000000001;
 		this.rcs = 0.000001;
 		this.target = null;
@@ -30,12 +30,12 @@ class Ship extends Body {
 		}
 	}
 	
-	draw() {
+	drawOrbit() {
 		context.save();
 		context.translate(
-			canvas.width/2,
-			canvas.height/2
-		);
+			this.position.x * scale + transform.x,
+			this.position.y * scale + transform.y
+        );
 		
 		context.rotate(this.rotation);
 		
@@ -54,7 +54,7 @@ class Ship extends Body {
 		
 		context.fillStyle = guiColor;
 		context.strokeStyle = guiColor;
-		
+		/*
 		let velocity = this.target === null ? this.velocity : this.velocity.subtract(this.target.velocity);
 		let angle = velocity.angle();
 		context.rotate(angle - this.rotation - Math.PI/2);
@@ -104,7 +104,7 @@ class Ship extends Body {
 			Math.sin(angle) * 15
 		);
 		}
-		
+		*/
 		context.restore();
 	}
 }

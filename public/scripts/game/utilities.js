@@ -16,8 +16,13 @@ function shortString(number, length) {
 	return number.toString().substring(0, length);
 }
 
-function scientificNotation(number) {
+function decimalPlace(number, decimals) {
+	let pow = Math.pow(10, decimals);
+	return Math.floor(number * pow) / pow
+}
+
+function scientificNotation(number, sigfigs = 3) {
     let log = Math.floor(Math.log10(number));
-	if(isFinite(number)) return shortString(number * Math.pow(10, -log), 4) + "e" + log;
+	if(isFinite(number)) return shortString(number * Math.pow(10, -log), sigfigs + 2) + "e" + log;
 	return number;
 }

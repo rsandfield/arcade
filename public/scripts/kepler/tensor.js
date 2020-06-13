@@ -14,7 +14,7 @@ class TensorCell {
 		this.settings = settings;
 	}
 	
-	draw() {
+	drawOrbit() {
 		context.save();
 		context.translate(
 			this.position.x * scale + transform.x,
@@ -131,18 +131,18 @@ class TensorGrid {
 		return bodies;
 	}
 	
-	draw() {
+	drawOrbit() {
 		document.getElementById("zoom").value = shortString(scale,5);
 		transform = this.focus.position.multiply(-scale).add(
 			new Vector(canvas.width/2, canvas.height/2)
 		);
 		
 		this.grid.forEach(cell => {
-			cell.draw();
+			cell.drawOrbit();
 		})
 		
 		this.bodies.forEach(body => {
-			body.draw();
+			body.drawOrbit();
 		})
 	}
 }

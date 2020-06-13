@@ -4,106 +4,104 @@ var transform = {
 	x:canvas.width/2,
 	y:canvas.height/2
 };
-var scale = 4; //0.005;
+var scale = 1.25; //0.005;
 var speed = 100;
+var mode = "Orbit"
 const bigG = 6.673 * Math.pow(10, -11);
 const guiColor = "#00FF00"
 
-var bodies = [
-	new Ship(
-		new Vector(6, 23454.8),
-		new Vector(Math.sqrt(bigG * 333000 / 23454.8, 0.5), Math.pow(bigG / 6, 0.5)),
-	),
-	new Star(
-		new Vector(0, 0),
-		new Vector(0, 0),
-		"Sun",
-		[
-			materials.water.mass(329000),
-			materials.lithic.mass(0),
-			materials.metallic.mass(4000)
-		]
-	),
-	new Planet(
-		new Vector(0, 9077),
-		new Vector(Math.sqrt(bigG * 333000 / 9077, 0.5), 0),
-		"Mercury",
-		[
-			materials.water.mass(0.000),
-			materials.lithic.mass(0.01825),
-			materials.metallic.mass(0.03705)
-		]
-	),
-	new Planet(
-		new Vector(0, 16957.8),
-		new Vector(Math.sqrt(bigG * 333000 / 16957.8, 0.5), 0),
-		"Venus",
-		[
-			materials.water.mass(0.0003),
-			materials.lithic.mass(0.554),
-			materials.metallic.mass(0.261)
-		]
-	),,
-	new Planet(
-		new Vector(0, 23454.8),
-		new Vector(Math.sqrt(bigG * 333000 / 23454.8, 0.5), -0.01 * Math.pow(bigG / 60, 0.5)),
-		"Earth",
-		[
-			materials.water.mass(0.0003),
-			materials.lithic.mass(0.68),
-			materials.metallic.mass(0.32)
-		]
-	),
-	new Planet(
-		new Vector(60, 23454.8),
-		new Vector(Math.sqrt(bigG * 333000 / 23454.8, 0.5), Math.pow(bigG / 58, 0.5)),
-		"Moon",
-		[
-			materials.water.mass(0.0003),
-			materials.lithic.mass(0.0067),
-			materials.metallic.mass(0.003)
-		]
-	)
-]
+var bodies = [];
+var parser = new DOMParser();
+var xmlHTTP = new XMLHttpRequest();
+xmlHTTP.addEventListener("load", response => {
+	let system = parser.parseFromString(xmlHTTP.responseText, "text/xml").childNodes[0].childNodes;
+	system.forEach(subsystem => {
+		traverseSystem(subsystem);
+	})
+});
+xmlHTTP.open("GET", "./public/scripts/kepler/bodies.xml", true);
+xmlHTTP.send();
 
-var tensors = new TensorGrid(1000000, 50, bodies);
-tensors.setFocus(bodies[0]);
+function traverseSystem(system, primary = null) {
+	let bodyType = system.tagName;
+	if(bodyType == "star") {
+		console.log("Star: " + system.getElementsByTagName("name")[0].childNodes[0].nodeValue);
+		let star;
+		if(primary) {
+			star = new Star(
+				system.getElementsByTagName("name")[0].childNodes[0].nodeValue,
+				Number.parseFloat(system.getElementsByTagName("mass")[0].childNodes[0].nodeValue),
+				primary,
+				Number.parseFloat(system.getElementsByTagName("semiMajor")[0].childNodes[0].nodeValue),
+				Number.parseFloat(system.getElementsByTagName("eccentricity")[0].childNodes[0].nodeValue),
+				Number.parseFloat(system.getElementsByTagName("periapsisArgument")[0].childNodes[0].nodeValue),
+				Number.parseFloat(system.getElementsByTagName("meanAnomaly")[0].childNodes[0].nodeValue),
+				Number.parseFloat(system.getElementsByTagName("inclination")[0].childNodes[0].nodeValue),
+				Number.parseFloat(system.getElementsByTagName("ascendingNode")[0].childNodes[0].nodeValue)
+			);
+		} else {
+			star = new Star(
+				system.getElementsByTagName("name")[0].childNodes[0].nodeValue,
+				system.getElementsByTagName("mass")[0].childNodes[0].nodeValue
+			);
+		}
+		bodies.push(star);
+		system.childNodes.forEach(subsystem => {
+			traverseSystem(subsystem, star);
+		})
+	}
+	if(bodyType == "planet") {
+		console.log("Planet: " + system.getElementsByTagName("name")[0].childNodes[0].nodeValue);
+		let planet = new Planet(
+			system.getElementsByTagName("name")[0].childNodes[0].nodeValue,
+			Number.parseFloat(system.getElementsByTagName("mass")[0].childNodes[0].nodeValue),
+			primary,
+			Number.parseFloat(system.getElementsByTagName("semiMajor")[0].childNodes[0].nodeValue),
+			Number.parseFloat(system.getElementsByTagName("eccentricity")[0].childNodes[0].nodeValue),
+			Number.parseFloat(system.getElementsByTagName("periapsisArgument")[0].childNodes[0].nodeValue),
+			Number.parseFloat(system.getElementsByTagName("meanAnomaly")[0].childNodes[0].nodeValue),
+			Number.parseFloat(system.getElementsByTagName("inclination")[0].childNodes[0].nodeValue),
+			Number.parseFloat(system.getElementsByTagName("ascendingNode")[0].childNodes[0].nodeValue)
+		);
+		bodies.push(planet);
+	}
+
+
+	//let bodies = system.querySelectorAll('star,planet');
+}
 
 var last = Date.now();
 var time = 0;
-var starDate = new Date(2000, 5, 5);
+var starDate = new Date(2020, 0, 0);
+let target = new Body("Nope", 0);
 animateFrame();
 function animateFrame() {
 	context.clearRect(0,0,canvas.width,canvas.height);
 
 	speed = document.getElementById("speed").value;
+	document.getElementById("zoom").value = shortString(scale,5);
 	
 	let now = Date.now();
 	time = (now - last) * speed;
 	last = now;
-	starDate = new Date(starDate.getTime() + time * 6)
+	starDate = new Date(starDate.getTime() + time * 1004.81);
 	document.getElementById("date").value = starDate.toString().substring(4, 24);
 	
-	tensors.clearCells();
-	tensors.bodies.forEach(body => {
-		tensors.assign(body);
+	bodies.forEach(body => {
+		body.update(time);
 	});
-	tensors.grid.forEach(cell => {
-		let bodies = tensors.getBodies(cell.index);
-		cell.bodies.forEach(body => {
-			bodies.forEach(other => {
-				if(!(body === other)) body.interact(other, time);
-			});
-		});
-	});
-	tensors.bodies.forEach(body => {
-		body.move(time);
-	});
-	bodies[6].calculateOrbit(bodies[5], bodies[1]);
 
-	tensors.draw();
+	transform = target.position.multiply(-scale).add(new Vector(canvas.width/2, canvas.height/2));
+
+	bodies.forEach(body => {
+		body.drawOrbit();
+	});
 	
 	requestAnimationFrame(animateFrame);
+}
+
+function switchMode(name) {
+	mode = name;
 }
 
 document.addEventListener('keydown', keyDown);

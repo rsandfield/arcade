@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+<star>
+    <name>Sol</name>
+    <mass>1989</mass>
+    <planet>
+        <name>Mercury</name>
+        <mass>0.000330</mass>
+        <semiMajor>57.90905</semiMajor>
+        <eccentricity>0.20563</eccentricity>
+        <periapsisArgument>0.508309691</periapsisArgument>
+        <meanAnomaly>3.050765719</meanAnomaly>
+        <inclination>0.05899213</inclination>
+        <ascendingNode>0.84351763</ascendingNode>
+    </planet>
+    <planet>
+        <name>Venus</name>
+        <mass>0.00486732</mass>
+        <semiMajor>108.208</semiMajor>
+        <eccentricity>0.006772</eccentricity>
+        <periapsisArgument>0.957906507</periapsisArgument>
+        <meanAnomaly>0.874671755</meanAnomaly>
+        <inclination>0.06736971</inclination>
+        <ascendingNode>0.19653524388</ascendingNode>
+    </planet>
+    <planet>
+        <name>Earth</name>
+        <mass>0.00597237</mass>
+        <semiMajor>149.598023</semiMajor>
+        <eccentricity>0.0167086</eccentricity>
+        <periapsisArgument>1.99330266505</periapsisArgument>
+        <meanAnomaly>0</meanAnomaly>
+        <inclination>0.12487831</inclination>
+        <ascendingNode>0.84351763</ascendingNode>
+        <planet>
+            <name>Moon</name>
+            <mass>0.00007342</mass>
+            <semiMajor>0.384399</semiMajor>
+            <eccentricity>0.0549</eccentricity>
+            <periapsisArgument>0</periapsisArgument>
+            <meanAnomaly>0</meanAnomaly>
+            <inclination>0.08979719</inclination>
+            <ascendingNode>0</ascendingNode>
+        </planet>
+    </planet>
+    <planet>
+        <name>Mars</name>
+        <mass>0.00064171</mass>
+        <semiMajor>227.9392</semiMajor>
+        <eccentricity>0.0934</eccentricity>
+        <periapsisArgument>5.000403214</periapsisArgument>
+        <meanAnomaly>0.338803314</meanAnomaly>
+        <inclination>0.0986111</inclination>
+        <ascendingNode>0.864950271</ascendingNode>
+    </planet>
+</star>
+</system>
