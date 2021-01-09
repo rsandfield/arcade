@@ -1,0 +1,32 @@
+{
+  "name": "arcade",
+  "version": "0.0.1",
+  "description": "Some simple games, maybe",
+  "engines": {
+    "node": "12.x"
+  },
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "node src/test.js"
+  },
+  "dependencies": {
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "socket.io": "^3.0.5"
+  },
+  "devDependencies": {
+    "got": "^11.3.0",
+    "tape": "^4.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rsandfield/arcade"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
+}
