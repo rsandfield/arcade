@@ -1,0 +1,16 @@
+body {
+    background-color: gray;
+}
+
+main {
+    padding: 12px;
+}
+
+footer {
+    padding: 12px 24px 12px 24px;
+    background-color: #222222;
+    color: #008800;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}

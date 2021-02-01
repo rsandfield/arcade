@@ -1,0 +1,78 @@
+<link rel='stylesheet' type='text/css' href='/styles/game.css'>
+<div id="container">
+    <h1>Mastermind</h1>
+    <div id="landing">
+        <p>
+            Mastermind is a code-breaking game for two players. A codemaker devises 
+            a code as a set of colored pegs. A codebreaker then attempts to figure
+            out the code through a series of guesses. The codemaker gives feedback
+            after each guess in the form of a key: a black peg for every peg of the 
+            correct color in the correct spot, and a white peg for every peg of the 
+            correct color in the wrong spot; the position of the keys have nothing
+            to do with the solution. The codemaker wins if the codebreaker cannot
+            guess the code correctly in the set number of turns. The codebreaker
+            wins if they successfully guess the code in time.
+        </p>
+        <form id="settings">
+            <table>
+                <tr>
+                    <th>
+                        Codemaker
+                    </th>
+                    <td>
+                        <input type="radio" id="cmc" name="codemaker" value="computer" checked>
+                        <label for="cmc">Computer</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="cmh" name="codemaker" value="human">
+                        <label for="cmh">Human</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Codebreaker
+                    </th>
+                    <td>
+                        <input type="radio" id="cbc" name="codebreaker" value="computer" checked>
+                        <label for="cbc">Computer</label>
+                    </td>
+                    <td>
+                        <input type="radio" id="cbh" name="codebreaker" value="human">
+                        <label for="cbh">Human</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Turns
+                    </th>
+                    <td colspan=2>
+                        <input type="number" id="turns" value="10" min=1>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Pegs
+                    </th>
+                    <td colspan=2>
+                        <input type="number" id="pegs" value="4" min=1 max=6>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Colors
+                    </th>
+                    <td colspan=2>
+                        <input type="number" id="colors" value="6" min=2 max=8>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=3>
+                        <input type="submit" name="play" value="Play" formaction="JavaScript:startGame()">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+<canvas id="canvas" height=500 width=500 style="display: none;"></canvas>
+</div>
+<script src="/scripts/games/mastermind.js"></script>

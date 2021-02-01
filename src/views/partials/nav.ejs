@@ -1,24 +1,27 @@
 <link rel='stylesheet' type='text/css' href='/styles/nav.css'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<a class="nav-button" href='/'>
+    <img class='logo' src='/img/logo.png' alt="Quartered azure and vert, a goat rampant argent.">
+</a>
 <nav class="top-nav">
-    <div>
-        <ul>
-            <a class="nav-button" href='/'>Home</a>
+    <div class="nav-wrapper">
+        <ul class="nav-list">
 			<div class="dropdown">
-                <a class="dropdown-button nav-button" href='games.html'>Games&#9662;</a>
+                <a class="dropdown-button nav-button" href='/games'>Games&#9662;</a>
                 <div class="dropdown-content">
-                    <a href="asteroids.ejs">Asteroids</a>
+                    <a href="/games/asteroids">Asteroids</a>
+                    <a href="/games/mastermind">Mastermind</a>
                 </div>
             </div>
 			<div class="dropdown">
-                <a class="dropdown-button nav-button" href='tools.html'>Tools&#9662;</a>
+                <a class="dropdown-button nav-button" href='tools'>Tools&#9662;</a>
                 <div class="dropdown-content">
-                    <a href="orrery.ejs">Orrery</a>
-                    <a href="character_creator.ejs">Character Creator</a>
+                    <a href="/orrery">Orrery</a>
+                    <a href="/character_creator">Character Creator</a>
                 </div>
             </div>
-			<a class="nav-button" href='contact.html'>Contact</a>
+			<a class="nav-button" href='contact'>Contact</a>
         </ul>
     </div>
 </nav>
