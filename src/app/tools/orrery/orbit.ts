@@ -1,5 +1,5 @@
 import { Camera, Color3, Mesh, MeshBuilder, Scene, StandardMaterial, TubeBuilder, Vector3 } from "@babylonjs/core";
-import { Container, TextBlock } from "@babylonjs/gui";
+import { Container, TextBlock, Rectangle } from "@babylonjs/gui";
 import { clampLooping, scientificNotation } from "src/app/utility/utilities";
 import { AstralConstants, Astrophysics } from "./astrophysics";
 import { Body } from "./body";
@@ -21,8 +21,8 @@ export class Orbit {
     mesh: Mesh;
     material: StandardMaterial;
 
-    statBlock: Container;
-    stats: TextBlock[];
+    //statBlock: Container;
+    //stats: TextBlock[];
 
     constructor(
         public name: string,
@@ -71,6 +71,7 @@ export class Orbit {
 
     }
 
+    /*
     createStatBlock() {
         let fontSize = 14;
         let padding = 2;
@@ -102,7 +103,7 @@ export class Orbit {
 
         return container;
     }
-
+    */
     changeScale(scale: number) {
         this.scale = scale;
         this.mesh.scaling = new Vector3(scale, scale, scale);
