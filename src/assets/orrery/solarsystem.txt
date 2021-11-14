@@ -1,0 +1,34 @@
+Data starts on line:
+19
+Epoch is year, 0-index month, day, hour, minute, second. Trailing zeroes will
+be filled in by the parser.
+
+Bodies may be 'Star' or 'Planet', class followed by name and # of satellites.
+Sattelites are listed directly after primary bodies.
+Oribtal elements are as follows, angles in degrees:
+    Longitude of the ascending node
+    Inclination to the ecliptic (plane of the Earth's orbit)
+    Argument of periapsis
+    Semi-major axis, or mean distance from Sun in AU
+    Eccentricity (0=circle, 0-1=ellipse, 1=parabola)
+    Mean anomaly (0 at perihelion; increases uniformly with time)
+
+Data mostly pulled from: https://stjarnhimlen.se/comp/ppcomp.html
+
+Epoch:
+Year    Month  Day  Hour Minute  Second Miliseconds
+2000    0      0    0    0       0      0
+Class   Name    Sat Ascending   Inclination Arg. Peri.  Sem Maj Sig SM Exp  Ecc.        M. Anomaly  Mass Sig    Mass Exp
+Star    Sol     9   0.0         0.0         0.0         0.0         0       0.0         0.0         1.989       30
+Planet  Mercury 0   48.3313     7.0047      29.1241     5.790905    10      0.205635    168.6562    3.3011      23
+Planet  Venus   0   76.6799     3.3946      54.8910     1.08208     11      0.006773    48.0052     4.8675      24
+Planet  Earth   1   0.0         0.0         282.9404    1.49598023  11      0.016709    356.0470    5.972       24
+Planet  Luna    0   125.1228    5.1454      318.0634    3.844       8       0.054900    115.3654    7.348       22
+Planet  Mars    2   49.5574     1.8497      286.5016    2.279392    11      0.093405    18.6021     6.4171      23
+Planet  Phobos  0   0.0         1.093       0.0         9.276       6       0.0151      0.0         1.0659      16
+Planet  Deimos  0   0.0         0.93        0.0         2.34632     7       0.00033     0.0         1.4762      15
+Planet  Jupiter 0   100.4542    1.3030      273.8777    7.7857      11      0.048498    19.8950     1.8982      27
+Planet  Saturn  0   113.6634    2.4886      339.3939    1.43353     12      0.055546    316.9670    5.6834      26
+Planet  Uranus  0   74.0005     0.7733      96.6612     2.87504     12      0.047318    142.5905    8.681       25
+Planet  Neptune 0   131.7806    1.7700      272.8461    4.50000     12      0.008606    260.2471    1.024       26
+Planet  Pluto   0   1.1024      1.7165      1.1515      5.909       12      0.247862    1.4092      1.307       22
