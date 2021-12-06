@@ -1,0 +1,13 @@
+<div class="grid">
+    <canvas #canvas class="game-board"></canvas>
+    <div class="column">
+        <div>
+            <h1>TETRIS</h1>
+            <canvas #next class="next"></canvas>
+            <p>Score: {{ points }}</p>
+            <p>Lines: {{ lines }}</p>
+            <p>Level: {{ level }}</p>
+        </div>
+        <button (click)="play()" class="play-button">Play</button>
+    </div>
+</div>
