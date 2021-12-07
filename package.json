@@ -1,11 +1,14 @@
 {
   "name": "arcade",
   "version": "0.0.0",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "heroku-postbuild": "ng build — prod",
+    "heroku-postbuild": "ng build arcade prod",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
