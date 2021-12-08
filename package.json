@@ -8,7 +8,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "heroku-postbuild": "ng build arcade prod",
+    "heroku-postbuild": "ng build arcade --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
